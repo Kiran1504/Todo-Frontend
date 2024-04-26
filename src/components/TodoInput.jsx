@@ -51,6 +51,7 @@ const TodoInput = () => {
         const res = await fetch('http://localhost:5000/api/todos/edit', {
             method: 'PUT',
             credentials: "include",
+            mode: "cors",
             headers: {
                 'Content-Type': 'application/json',
                 authorization: `Bearer ${token}`
@@ -110,6 +111,7 @@ const TodoInput = () => {
             const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/create', {
                 method: 'POST',
                 credentials: "include",
+                mode: "cors",
                 headers: {
                     'Content-Type': 'application/json',
                     authorization: `Bearer ${token}`
@@ -159,6 +161,7 @@ const TodoInput = () => {
             const res = await fetch('http://localhost:5000/api/todos/delete', {
                 method: 'DELETE',
                 credentials: "include",
+                mode: "cors",
                 headers: {
                     'Content-Type': 'application/json',
                     authorization: `Bearer ${token}`
@@ -212,6 +215,7 @@ const TodoInput = () => {
                 const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/all', {
                     method: 'GET',
                     credentials: "include",
+                    mode: "cors",
                     headers: {
                         'Content-Type': 'application/json',
                         authorization: `Bearer ${token}`

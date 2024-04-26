@@ -30,6 +30,7 @@ const Login = () => {
 
                 },
                 credentials: 'include',
+                mode: "cors",
                 body: JSON.stringify({ email, password })
             })
 
