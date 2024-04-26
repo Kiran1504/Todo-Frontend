@@ -26,7 +26,7 @@ const Register = () => {
                 throw new Error("Invalid email or password")
             }
 
-            const res = await fetch('http://localhost:5000/api/users/signup', {
+            const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/users/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

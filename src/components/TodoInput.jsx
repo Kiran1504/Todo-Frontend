@@ -48,7 +48,7 @@ const TodoInput = () => {
 
         const token = cookies['token'];
 
-        const res = await fetch('http://localhost:5000/api/todos/edit', {
+        const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/edit', {
             method: 'PUT',
             credentials: "include",
             mode: "cors",
@@ -158,7 +158,7 @@ const TodoInput = () => {
                 return cookies;
             }, {});
             const token = cookies['token'];
-            const res = await fetch('http://localhost:5000/api/todos/delete', {
+            const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/delete', {
                 method: 'DELETE',
                 credentials: "include",
                 mode: "cors",
