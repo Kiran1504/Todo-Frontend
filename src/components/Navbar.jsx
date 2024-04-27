@@ -9,7 +9,8 @@ const Navbar = () => {
     const loginStatus = useSelector(state => state.authStatus.isLogedIn)
     const dispatch = useDispatch()
 
-    const handleLogout = () => {
+    const handleLogout = (e) => {
+        e.preventDefault()
         axios.get('https://fire-ai-todo-backend.onrender.com/api/users/logout', {
             withCredentials: true
         })
