@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { MdOutlineDelete, MdOutlineDownloadDone, MdOutlineEdit } from "react-icons/md";
@@ -40,42 +41,53 @@ const TodoInput = () => {
             }
             return todo
         })
-        const cookies = document.cookie.split(';').reduce((cookies, item) => {
-            const [name, value] = item.split('=').map(part => part.trim());
-            cookies[name] = value;
-            return cookies;
-        }, {});
+        // const cookies = document.cookie.split(';').reduce((cookies, item) => {
+        //     const [name, value] = item.split('=').map(part => part.trim());
+        //     cookies[name] = value;
+        //     return cookies;
+        // }, {});
 
-        const token = cookies['token'];
+        // const token = cookies['token'];
 
-        const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/edit', {
-            method: 'PUT',
-            credentials: "include",
-            mode: "cors",
-            headers: {
-                'Content-Type': 'application/json',
-                authorization: `Bearer ${token}`
-            },
-            body: JSON.stringify(newTodos.find(todo => todo.id === editId))
+        // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/edit', {
+        //     method: 'PUT',
+        //     credentials: "include",
+        //     mode: "cors",
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         authorization: `Bearer ${token}`
+        //     },
+        //     body: JSON.stringify(newTodos.find(todo => todo.id === editId))
+        // })
+
+        // const data = await res.json()
+        // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
+
+        axios.put('https://fire-ai-todo-backend.onrender.com/api/todos/edit', newTodos.find(todo => todo.id === editId), {
+            withCredentials: true
         })
-
-        const data = await res.json()
-        if (!res.ok) throw new Error(data.message || 'Something went wrong!')
-
-
-        if (isImportant) {
-            setTimeout(() => {
-                if (todosRef.current.find(todo => todo.id === editId)) {
-                    console.log('Notifying important task');
-                    notifyImportantTaskRef.current(editId, newTodos)
+            .then(res => {
+                console.log(res.data)
+                if (isImportant) {
+                    setTimeout(() => {
+                        if (todosRef.current.find(todo => todo.id === editId)) {
+                            console.log('Notifying important task');
+                            notifyImportantTaskRef.current(editId, newTodos)
+                        }
+                    }, 2000)
                 }
-            }, 2000)
-        }
-        setTodos(newTodos)
-        setEditMode(false)
-        setTitle('')
-        setDescription('')
-        setIsImportant(false)
+                setTodos(newTodos)
+                setEditMode(false)
+                setTitle('')
+                setDescription('')
+                setIsImportant(false)
+            })
+            .catch(err => {
+                console.log(err)
+                throw new Error(err)
+            })
+
+
     }
 
     const handleSubmit = async (e) => {
@@ -100,49 +112,59 @@ const TodoInput = () => {
                 completed: false
             };
 
-            const cookies = document.cookie.split(';').reduce((cookies, item) => {
-                const [name, value] = item.split('=').map(part => part.trim());
-                cookies[name] = value;
-                return cookies;
-            }, {});
+            // const cookies = document.cookie.split(';').reduce((cookies, item) => {
+            //     const [name, value] = item.split('=').map(part => part.trim());
+            //     cookies[name] = value;
+            //     return cookies;
+            // }, {});
 
-            const token = cookies['token'];
+            // const token = cookies['token'];
 
-            const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/create', {
-                method: 'POST',
-                credentials: "include",
-                mode: "cors",
-                headers: {
-                    'Content-Type': 'application/json',
-                    authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify(newTodo)
+            // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/create', {
+            //     method: 'POST',
+            //     credentials: "include",
+            //     mode: "cors",
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         authorization: `Bearer ${token}`
+            //     },
+            //     body: JSON.stringify(newTodo)
+            // })
+
+            // const data = await res.json()
+            // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
+
+            axios.post("https://fire-ai-todo-backend.onrender.com/api/todos/create", newTodo, {
+                withCredentials: true
             })
+                .then(res => {
+                    console.log(res.data)
+                    setTodos(prevTodos => {
+                        const updatedTodos = [...prevTodos, newTodo];
 
-            const data = await res.json()
-            if (!res.ok) throw new Error(data.message || 'Something went wrong!')
-
-            setTodos(prevTodos => {
-                const updatedTodos = [...prevTodos, newTodo];
-
-                if (isImportant) {
-                    console.log('Important task added');
-                    setTimeout(() => {
-                        if (todosRef.current.find(todo => todo.id === newTodo.id)) {
-                            console.log('Notifying important task');
-                            notifyImportantTaskRef.current(newTodo.id, updatedTodos)
+                        if (isImportant) {
+                            console.log('Important task added');
+                            setTimeout(() => {
+                                if (todosRef.current.find(todo => todo.id === newTodo.id)) {
+                                    console.log('Notifying important task');
+                                    notifyImportantTaskRef.current(newTodo.id, updatedTodos)
+                                }
+                            }, 2000)
                         }
-                    }, 2000)
-                }
 
-                return updatedTodos;
-            });
+                        return updatedTodos;
+                    });
+                    setTitle('')
+                    setIsImportant(false)
+                    setDescription('')
+                    setId(id + 1)
+                })
+                .catch(err => {
+                    console.log(err)
+                    throw new Error(err)
 
+                })
 
-            setTitle('')
-            setIsImportant(false)
-            setDescription('')
-            setId(id + 1)
 
         } catch (error) {
             console.log(error)
@@ -152,28 +174,41 @@ const TodoInput = () => {
     const handleDelete = async (e, id) => {
         const newTodos = todos.filter((todo) => todo.id !== id)
         try {
-            const cookies = document.cookie.split(';').reduce((cookies, item) => {
-                const [name, value] = item.split('=').map(part => part.trim());
-                cookies[name] = value;
-                return cookies;
-            }, {});
-            const token = cookies['token'];
-            const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/delete', {
-                method: 'DELETE',
-                credentials: "include",
-                mode: "cors",
-                headers: {
-                    'Content-Type': 'application/json',
-                    authorization: `Bearer ${token}`
-                },
-                body: JSON.stringify({ id })
-            })
-            const data = await res.json()
-            console.log(data)
-            if (!res.ok) throw new Error(data.message || 'Something went wrong!')
-            setTodos(newTodos)
-        } catch (error) {
+            // const cookies = document.cookie.split(';').reduce((cookies, item) => {
+            //     const [name, value] = item.split('=').map(part => part.trim());
+            //     cookies[name] = value;
+            //     return cookies;
+            // }, {});
+            // const token = cookies['token'];
+            // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/delete', {
+            //     method: 'DELETE',
+            //     credentials: "include",
+            //     mode: "cors",
+            //     headers: {
+            //         'Content-Type': 'application/json',
+            //         authorization: `Bearer ${token}`
+            //     },
+            //     body: JSON.stringify({ id })
+            // })
+            // const data = await res.json()
 
+            axios.delete('https://fire-ai-todo-backend.onrender.com/api/todos/delete', {
+                data: { id: id },
+                withCredentials: true
+            })
+                .then(res => {
+                    console.log(res.data)
+                    setTodos(newTodos)
+                })
+                .catch(err => {
+                    console.log(err)
+                    throw new Error(err)
+                })
+
+            // console.log(data)
+            // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
+        } catch (error) {
+            console.log(error)
         }
     }
 
@@ -206,25 +241,37 @@ const TodoInput = () => {
     useEffect(() => {
         const fetchTodos = async () => {
             try {
-                const cookies = document.cookie.split(';').reduce((cookies, item) => {
-                    const [name, value] = item.split('=').map(part => part.trim());
-                    cookies[name] = value;
-                    return cookies;
-                }, {});
-                const token = cookies['token'];
-                const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/all', {
-                    method: 'GET',
-                    credentials: "include",
-                    mode: "cors",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        authorization: `Bearer ${token}`
-                    }
+                // const cookies = document.cookie.split(';').reduce((cookies, item) => {
+                //     const [name, value] = item.split('=').map(part => part.trim());
+                //     cookies[name] = value;
+                //     return cookies;
+                // }, {});
+                // const token = cookies['token'];
+                // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/all', {
+                //     method: 'GET',
+                //     credentials: "include",
+                //     mode: "cors",
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         authorization: `Bearer ${token}`
+                //     }
+                // })
+                // const data = await res.json()
+                // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
+                // setTodos(data.todos)
+                // setId(data.todos.length)
+                axios.get('https://fire-ai-todo-backend.onrender.com/api/todos/all', {
+                    withCredentials: true
                 })
-                const data = await res.json()
-                if (!res.ok) throw new Error(data.message || 'Something went wrong!')
-                setTodos(data.todos)
-                setId(data.todos.length)
+                    .then(res => {
+                        console.log(res.data)
+                        setTodos(res.data.todos)
+                        setId(res.data.todos.length)
+                    })
+                    .catch(err => {
+                        console.log(err)
+                        throw new Error(err)
+                    })
             } catch (error) {
                 console.log(error)
             }

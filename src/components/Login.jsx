@@ -1,8 +1,11 @@
+import axios from 'axios';
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { object, string } from 'yup';
 
 const Login = () => {
+
+    const navigate = useNavigate()
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -23,25 +26,34 @@ const Login = () => {
             if (!isValid) {
                 throw new Error("Invalid email or password")
             }
-            const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/users/signin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
+            // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/users/signin', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
 
-                },
-                credentials: 'include',
-                mode: "cors",
-                body: JSON.stringify({ email, password })
+            //     },
+            //     credentials: 'include',
+            //     mode: "cors",
+            //     body: JSON.stringify({ email, password })
+            // })
+
+            // const data = await res.json()
+            // if (!res.ok) {
+            //     throw new Error(data.message || 'Something went wrong!')
+            // }
+            axios.post('https://fire-ai-todo-backend.onrender.com/api/users/signin', { email, password }, {
+                withCredentials: true
             })
-
-            const data = await res.json()
-            if (!res.ok) {
-                throw new Error(data.message || 'Something went wrong!')
-            }
-            alert(data.message)
-
-            setEmail('')
-            setPassword('')
+                .then(res => {
+                    console.log(res.data)
+                    alert(res.data.message)
+                    navigate('/')
+                    setEmail('')
+                    setPassword('')
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         } catch (error) {
             alert(error.message)
         }

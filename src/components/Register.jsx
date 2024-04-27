@@ -1,8 +1,11 @@
+import axios from 'axios';
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { object, string } from 'yup';
 
 const Register = () => {
+
+    const navigate = useNavigate()
 
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
@@ -26,23 +29,32 @@ const Register = () => {
                 throw new Error("Invalid email or password")
             }
 
-            const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/users/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ name, email, password })
+            // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/users/signup', {
+            //     method: 'POST',
+            //     headers: {
+            //         'Content-Type': 'application/json'
+            //     },
+            //     body: JSON.stringify({ name, email, password })
+            // })
+
+            // const data = await res.json()
+            // if (!res.ok) {
+            //     throw new Error(data.message || 'Something went wrong!')
+            // }
+            axios.post('https://fire-ai-todo-backend.onrender.com/api/users/signup', { name, email, password }, {
+                withCredentials: true
             })
-
-            const data = await res.json()
-            if (!res.ok) {
-                throw new Error(data.message || 'Something went wrong!')
-            }
-            alert(data.message)
-
-            setName('')
-            setEmail('')
-            setPassword('')
+                .then(res => {
+                    console.log(res.data)
+                    alert(res.data.message)
+                    navigate('/login')
+                    setName('')
+                    setEmail('')
+                    setPassword('')
+                })
+                .catch(err => {
+                    console.log(err)
+                })
         } catch (error) {
             console.log(error);
             alert(error.message)
