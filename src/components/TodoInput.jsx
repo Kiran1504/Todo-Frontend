@@ -2,8 +2,11 @@ import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react'
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { MdOutlineDelete, MdOutlineDownloadDone, MdOutlineEdit } from "react-icons/md";
+import { useSelector } from 'react-redux';
 
 const TodoInput = () => {
+
+    const loginStatus = useSelector(state => state.authStatus.isLogedIn)
 
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
@@ -63,6 +66,11 @@ const TodoInput = () => {
         // const data = await res.json()
         // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
 
+        if (!loginStatus) {
+            alert('Please login to continue')
+            return;
+        }
+
         axios.put('https://fire-ai-todo-backend.onrender.com/api/todos/edit', newTodos.find(todo => todo.id === editId), {
             withCredentials: true
         })
@@ -71,7 +79,7 @@ const TodoInput = () => {
                 if (isImportant) {
                     setTimeout(() => {
                         if (todosRef.current.find(todo => todo.id === editId)) {
-                            console.log('Notifying important task');
+                            // console.log('Notifying important task');
                             notifyImportantTaskRef.current(editId, newTodos)
                         }
                     }, 2000)
@@ -134,6 +142,11 @@ const TodoInput = () => {
             // const data = await res.json()
             // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
 
+            if (!loginStatus) {
+                alert('Please login to continue')
+                return;
+            }
+
             axios.post("https://fire-ai-todo-backend.onrender.com/api/todos/create", newTodo, {
                 withCredentials: true
             })
@@ -143,10 +156,10 @@ const TodoInput = () => {
                         const updatedTodos = [...prevTodos, newTodo];
 
                         if (isImportant) {
-                            console.log('Important task added');
+                            // console.log('Important task added');
                             setTimeout(() => {
                                 if (todosRef.current.find(todo => todo.id === newTodo.id)) {
-                                    console.log('Notifying important task');
+                                    // console.log('Notifying important task');
                                     notifyImportantTaskRef.current(newTodo.id, updatedTodos)
                                 }
                             }, 2000)
@@ -162,7 +175,6 @@ const TodoInput = () => {
                 .catch(err => {
                     console.log(err)
                     throw new Error(err)
-
                 })
 
 
@@ -216,7 +228,20 @@ const TodoInput = () => {
         const id = e.target.name
         const newTodos = [...todos]
         newTodos[id].completed = !newTodos[id].completed
-        setTodos(newTodos)
+        const completeStatus = newTodos[id].completed
+        console.log(completeStatus);
+
+        axios.put('https://fire-ai-todo-backend.onrender.com/api/todos/togglecomplete', { id: id, completeStatus }, {
+            withCredentials: true
+        })
+            .then(res => {
+                console.log(res.data)
+                setTodos(newTodos)
+            })
+            .catch(err => {
+                console.log(err)
+                throw new Error(err)
+            })
     }
 
     const handleEdit = (e, todo) => {
@@ -235,7 +260,23 @@ const TodoInput = () => {
                 completed: true
             }
         })
-        setTodos(newTodos)
+
+        if (!loginStatus) {
+            alert('Please login to continue')
+            return;
+        }
+
+        axios.put('https://fire-ai-todo-backend.onrender.com/api/todos/completeall', {}, {
+            withCredentials: true
+        })
+            .then(res => {
+                console.log(res.data)
+                setTodos(newTodos)
+            })
+            .catch(err => {
+                console.log(err)
+                throw new Error(err)
+            })
     }
 
     useEffect(() => {
@@ -260,6 +301,9 @@ const TodoInput = () => {
                 // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
                 // setTodos(data.todos)
                 // setId(data.todos.length)
+
+                if (!loginStatus) return;
+
                 axios.get('https://fire-ai-todo-backend.onrender.com/api/todos/all', {
                     withCredentials: true
                 })
@@ -277,7 +321,7 @@ const TodoInput = () => {
             }
         }
         fetchTodos()
-    }, [])
+    }, [loginStatus])
 
     return (
         <>
