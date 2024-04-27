@@ -29,21 +29,7 @@ const Login = () => {
             if (!isValid) {
                 throw new Error("Invalid email or password")
             }
-            // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/users/signin', {
-            //     method: 'POST',
-            //     headers: {
-            //         'Content-Type': 'application/json'
 
-            //     },
-            //     credentials: 'include',
-            //     mode: "cors",
-            //     body: JSON.stringify({ email, password })
-            // })
-
-            // const data = await res.json()
-            // if (!res.ok) {
-            //     throw new Error(data.message || 'Something went wrong!')
-            // }
             axios.post('https://fire-ai-todo-backend.onrender.com/api/users/signin', { email, password }, {
                 withCredentials: true
             })

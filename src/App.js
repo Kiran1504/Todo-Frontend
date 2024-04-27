@@ -18,15 +18,6 @@ function App() {
     (
       async () => {
         try {
-          // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/users/verify', {
-          //   method: 'GET',
-          //   headers: {
-          //     'Content-Type': 'application/json'
-          //   },
-          //   credentials: 'include'
-          // })
-          // const data = await res.json()
-          // console.log(data)
 
           if (loginStatus) return;
 
@@ -47,7 +38,7 @@ function App() {
         }
       }
     )()
-  }, [dispatch])
+  }, [dispatch, loginStatus])
   return (
     <div className="App bg-slate-900 h-screen px-1 sm:px-0">
       <Navbar />
@@ -56,7 +47,6 @@ function App() {
         <Route path='/login' exact element={<Login />} />
         <Route path='/register' exact element={<Register />} />
       </Routes>
-      {/* <TodoInput /> */}
     </div>
   );
 }

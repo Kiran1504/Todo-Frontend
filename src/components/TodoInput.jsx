@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { FaBookmark, FaRegBookmark } from "react-icons/fa";
 import { MdOutlineDelete, MdOutlineDownloadDone, MdOutlineEdit } from "react-icons/md";
 import { useSelector } from 'react-redux';
@@ -15,6 +15,8 @@ const TodoInput = () => {
     const [id, setId] = useState(0)
     const [editId, setEditId] = useState(-1)
     const [editMode, setEditMode] = useState([])
+    const [searchValue, setSearchValue] = useState('')
+    const [searching, setSearching] = useState(false)
     const todosRef = useRef();
     todosRef.current = todos;
     const notifyImportantTaskRef = useRef();
@@ -44,27 +46,6 @@ const TodoInput = () => {
             }
             return todo
         })
-        // const cookies = document.cookie.split(';').reduce((cookies, item) => {
-        //     const [name, value] = item.split('=').map(part => part.trim());
-        //     cookies[name] = value;
-        //     return cookies;
-        // }, {});
-
-        // const token = cookies['token'];
-
-        // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/edit', {
-        //     method: 'PUT',
-        //     credentials: "include",
-        //     mode: "cors",
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         authorization: `Bearer ${token}`
-        //     },
-        //     body: JSON.stringify(newTodos.find(todo => todo.id === editId))
-        // })
-
-        // const data = await res.json()
-        // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
 
         if (!loginStatus) {
             alert('Please login to continue')
@@ -79,7 +60,6 @@ const TodoInput = () => {
                 if (isImportant) {
                     setTimeout(() => {
                         if (todosRef.current.find(todo => todo.id === editId)) {
-                            // console.log('Notifying important task');
                             notifyImportantTaskRef.current(editId, newTodos)
                         }
                     }, 2000)
@@ -120,28 +100,6 @@ const TodoInput = () => {
                 completed: false
             };
 
-            // const cookies = document.cookie.split(';').reduce((cookies, item) => {
-            //     const [name, value] = item.split('=').map(part => part.trim());
-            //     cookies[name] = value;
-            //     return cookies;
-            // }, {});
-
-            // const token = cookies['token'];
-
-            // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/create', {
-            //     method: 'POST',
-            //     credentials: "include",
-            //     mode: "cors",
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         authorization: `Bearer ${token}`
-            //     },
-            //     body: JSON.stringify(newTodo)
-            // })
-
-            // const data = await res.json()
-            // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
-
             if (!loginStatus) {
                 alert('Please login to continue')
                 return;
@@ -156,10 +114,8 @@ const TodoInput = () => {
                         const updatedTodos = [...prevTodos, newTodo];
 
                         if (isImportant) {
-                            // console.log('Important task added');
                             setTimeout(() => {
                                 if (todosRef.current.find(todo => todo.id === newTodo.id)) {
-                                    // console.log('Notifying important task');
                                     notifyImportantTaskRef.current(newTodo.id, updatedTodos)
                                 }
                             }, 2000)
@@ -186,23 +142,6 @@ const TodoInput = () => {
     const handleDelete = async (e, id) => {
         const newTodos = todos.filter((todo) => todo.id !== id)
         try {
-            // const cookies = document.cookie.split(';').reduce((cookies, item) => {
-            //     const [name, value] = item.split('=').map(part => part.trim());
-            //     cookies[name] = value;
-            //     return cookies;
-            // }, {});
-            // const token = cookies['token'];
-            // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/delete', {
-            //     method: 'DELETE',
-            //     credentials: "include",
-            //     mode: "cors",
-            //     headers: {
-            //         'Content-Type': 'application/json',
-            //         authorization: `Bearer ${token}`
-            //     },
-            //     body: JSON.stringify({ id })
-            // })
-            // const data = await res.json()
 
             axios.delete('https://fire-ai-todo-backend.onrender.com/api/todos/delete', {
                 data: { id: id },
@@ -217,8 +156,6 @@ const TodoInput = () => {
                     throw new Error(err)
                 })
 
-            // console.log(data)
-            // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
         } catch (error) {
             console.log(error)
         }
@@ -253,6 +190,19 @@ const TodoInput = () => {
         setIsImportant(todo.isImportant)
     }
 
+    const handleSearch = (e) => {
+        const searchValue = e.target.value.toLowerCase();
+        console.log(searchValue);
+        setSearchValue(searchValue);
+    };
+
+    const filteredTodos = useMemo(() => {
+        return todos.filter((todo) =>
+            todo.title.toLowerCase().includes(searchValue.toLowerCase())
+            ||
+            todo.description.toLowerCase().includes(searchValue.toLowerCase()))
+    }, [searchValue, todos])
+
     const markAllComplete = () => {
         const newTodos = todos.map((todo) => {
             return {
@@ -282,26 +232,6 @@ const TodoInput = () => {
     useEffect(() => {
         const fetchTodos = async () => {
             try {
-                // const cookies = document.cookie.split(';').reduce((cookies, item) => {
-                //     const [name, value] = item.split('=').map(part => part.trim());
-                //     cookies[name] = value;
-                //     return cookies;
-                // }, {});
-                // const token = cookies['token'];
-                // const res = await fetch('https://fire-ai-todo-backend.onrender.com/api/todos/all', {
-                //     method: 'GET',
-                //     credentials: "include",
-                //     mode: "cors",
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //         authorization: `Bearer ${token}`
-                //     }
-                // })
-                // const data = await res.json()
-                // if (!res.ok) throw new Error(data.message || 'Something went wrong!')
-                // setTodos(data.todos)
-                // setId(data.todos.length)
-
                 if (!loginStatus) return;
 
                 axios.get('https://fire-ai-todo-backend.onrender.com/api/todos/all', {
@@ -369,7 +299,7 @@ const TodoInput = () => {
 
             <div
                 className='sm:w-1/2 bg-slate-800 rounded-lg shadow-sm text-white shadow-gray-500 mx-auto my-5 p-0.5 sm:px-3 sm:py-3'>
-                <div className='display flex justify-start gap-4 items-center'>
+                <div className='display flex flex-wrap justify-start gap-4 items-center'>
 
                     <p className='text-left px-4'>All your tasks...</p>
                     <button
@@ -377,40 +307,88 @@ const TodoInput = () => {
                         onClick={markAllComplete}>
                         Mark all completed
                     </button>
-                </div>
-                {todos.length > 0 && todos.map((todo) =>
-                (<div key={todo.id}
-                    className={`${!todo.completed ? "bg-slate-900 text-white" : "bg-gray-950 bg-opacity-25 text-opacity-25 text-slate-300"} 
-                        flex justify-between items-center gap-4 px-5 py-2 rounded-lg my-2`}>
                     <input
-                        type="checkbox"
-                        id='green-checkbox'
-                        name={todo.id}
-                        checked={todo.completed}
-                        onChange={handleComplete}
-                        className='rounded-full p-4 text-green-600 w-4 h-4'
+                        type='text'
+                        className='w-full sm:w-1/3 h-3/4 bg-slate-800 text-white text-lg p-2 rounded-lg border-2 focus:outline-none'
+                        placeholder='Search...'
+                        value={searchValue}
+                        onFocus={() => {
+                            setSearching(true)
+                        }}
+                        onBlur={() => {
+                            setSearching(false)
+                        }}
+                        onChange={handleSearch}
                     />
-                    <div className='flex gap-2 flex-col w-[72%] text-left md:text-justify'>
+                </div>
+                {
+                    !(searching && searchValue.trim() !== '') ?
+                        (todos.length > 0 && todos.map((todo) =>
+                        (<div key={todo.id}
+                            className={`${!todo.completed ? "bg-slate-900 text-white" : "bg-gray-950 bg-opacity-25 text-opacity-25 text-slate-300"} 
+                        flex justify-between items-center gap-4 px-5 py-2 rounded-lg my-2`}>
+                            <input
+                                type="checkbox"
+                                id='green-checkbox'
+                                name={todo.id}
+                                checked={todo.completed}
+                                onChange={handleComplete}
+                                className='rounded-full p-4 text-green-600 w-4 h-4'
+                            />
+                            <div className='flex gap-2 flex-col w-[72%] text-left md:text-justify'>
 
-                        <h1 className='text-xl'>{todo.title}</h1>
-                        <p className={`text-sm text-slate-300 ${todo.completed ? "text-opacity-25" : ""} line-clamp-3 md:line-clamp-none`}>{todo.description}</p>
-                    </div>
-                    <div className='flex gap-3 justify-center items-center'>
+                                <h1 className='text-xl'>{todo.title}</h1>
+                                <p className={`text-sm text-slate-300 ${todo.completed ? "text-opacity-25" : ""} line-clamp-3 md:line-clamp-none`}>{todo.description}</p>
+                            </div>
+                            <div className='flex gap-3 justify-center items-center'>
 
-                        <button onClick={(e) => handleEdit(e, todo)}>
-                            <MdOutlineEdit className='text-lg sm:text-xl' />
-                        </button>
-                        <button onClick={(e) => handleDelete(e, todo.id)}>
-                            <MdOutlineDelete className='text-lg sm:text-xl' />
-                        </button>
+                                <button onClick={(e) => handleEdit(e, todo)}>
+                                    <MdOutlineEdit className='text-lg sm:text-xl' />
+                                </button>
+                                <button onClick={(e) => handleDelete(e, todo.id)}>
+                                    <MdOutlineDelete className='text-lg sm:text-xl' />
+                                </button>
 
-                        <p>
-                            {todo.isImportant ? <FaBookmark className='text-lg sm:text-xl' color='lightgreen' /> : <FaRegBookmark className='text-lg sm:text-xl' />}
-                        </p>
+                                <p>
+                                    {todo.isImportant ? <FaBookmark className='text-lg sm:text-xl' color='lightgreen' /> : <FaRegBookmark className='text-lg sm:text-xl' />}
+                                </p>
 
-                    </div>
-                </div>)
-                )}
+                            </div>
+                        </div>)
+                        )) :
+                        (filteredTodos.length >= 0 && filteredTodos.map((todo) =>
+                        (<div key={todo.id}
+                            className={`${!todo.completed ? "bg-slate-900 text-white" : "bg-gray-950 bg-opacity-25 text-opacity-25 text-slate-300"} 
+                        flex justify-between items-center gap-4 px-5 py-2 rounded-lg my-2`}>
+                            <input
+                                type="checkbox"
+                                id='green-checkbox'
+                                name={todo.id}
+                                checked={todo.completed}
+                                onChange={handleComplete}
+                                className='rounded-full p-4 text-green-600 w-4 h-4'
+                            />
+                            <div className='flex gap-2 flex-col w-[72%] text-left md:text-justify'>
+
+                                <h1 className='text-xl'>{todo.title}</h1>
+                                <p className={`text-sm text-slate-300 ${todo.completed ? "text-opacity-25" : ""} line-clamp-3 md:line-clamp-none`}>{todo.description}</p>
+                            </div>
+                            <div className='flex gap-3 justify-center items-center'>
+
+                                <button onClick={(e) => handleEdit(e, todo)}>
+                                    <MdOutlineEdit className='text-lg sm:text-xl' />
+                                </button>
+                                <button onClick={(e) => handleDelete(e, todo.id)}>
+                                    <MdOutlineDelete className='text-lg sm:text-xl' />
+                                </button>
+
+                                <p>
+                                    {todo.isImportant ? <FaBookmark className='text-lg sm:text-xl' color='lightgreen' /> : <FaRegBookmark className='text-lg sm:text-xl' />}
+                                </p>
+
+                            </div>
+                        </div>)
+                        ))}
             </div>
         </>
     )
