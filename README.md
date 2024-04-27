@@ -14,11 +14,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 4. The todo's are editable and stored in backend.
 5. This Todo app is fully integrated with backend (includes original api calls and not mock api calls) and stores data in **_MongoDB_**.
 6. I have successfully implemented Authentication of user by cookies using **JWT**.
-7. Used react-redux to manage AuthStatus (is user logged in or not.) as global state.
-8. The backend is also developed by me. **[Backend repository](https://github.com/Kiran1504/Todo-Backend)**
-9. Routing is done using react-router-dom.
-10. The client side form validation is performed using [Yup](https://www.npmjs.com/package/yup)
-11. useEffect() and useState() are used for managing the states in application.
+7. The todos can be searched by their title or their descriptions. For **optimising** the search I used useMemo() hook of react.
+8. Used react-redux to manage AuthStatus (is user logged in or not.) as global state.
+9. The backend is also developed by me. **[Backend repository](https://github.com/Kiran1504/Todo-Backend)**
+10. Routing is done using react-router-dom.
+11. The client side form validation is performed using [Yup](https://www.npmjs.com/package/yup)
+12. useEffect() and useState() are used for managing the states in application.
 
 ## How it works
 
