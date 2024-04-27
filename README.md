@@ -1,5 +1,8 @@
 # [To-Do app Task](https://fire-ai-kiran-todo.netlify.app/) (click to open)
 
+**_Free instance will spin down with inactivity, which can delay requests by 50 seconds or more._**
+Backend is deployed on render.com which has a warning of inactivity.
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Key Features Implemented
